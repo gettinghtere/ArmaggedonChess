@@ -1,20 +1,51 @@
-package com.example;
+package com.example.chess;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-@SpringBootApplication
 @RestController
-public class ChessSiteApplication {
+@RequestMapping("/chess")
+public class ChessApplication {
 
-    @GetMapping("/")
-    public String home() {
-        return "Hello from Render!";
+    @GetMapping("/health")
+    public String health() {
+        return "Chess backend is running!";
     }
 
-    public static void main(String[] args) {
-        SpringApplication.run(ChessSiteApplication.class, args);
+    // Example move validation stub (replace with real logic later)
+    @PostMapping("/validate")
+    public ValidationResult validateMove(@RequestBody Move move) {
+        // Very basic placeholder logic:
+        boolean ok = move != null
+                && move.getFrom() != null
+                && move.getTo() != null
+                && move.getFrom().matches("^[a-h][1-8]$")
+                && move.getTo().matches("^[a-h][1-8]$");
+
+        return new ValidationResult(ok, ok ? "OK" : "Invalid square(s)");
+    }
+
+    // --- DTOs ---
+
+    public static class Move {
+        private String from;
+        private String to;
+
+        public String getFrom() { return from; }
+        public void setFrom(String from) { this.from = from; }
+        public String getTo() { return to; }
+        public void setTo(String to) { this.to = to; }
+    }
+
+    public static class ValidationResult {
+        private boolean valid;
+        private String message;
+
+        public ValidationResult(boolean valid, String message) {
+            this.valid = valid;
+            this.message = message;
+        }
+
+        public boolean isValid() { return valid; }
+        public String getMessage() { return message; }
     }
 }
